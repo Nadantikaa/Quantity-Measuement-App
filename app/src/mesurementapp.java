@@ -42,6 +42,20 @@ public class mesurementapp {
             return new QuantityLength(converted, target);
         }
 
+        public QuantityLength add(QuantityLength other) {
+            if (other == null) throw new IllegalArgumentException();
+            double sumBase = this.toFeet() + other.toFeet();
+            double result = this.unit.fromBase(sumBase);
+            return new QuantityLength(result, this.unit);
+        }
+
+        public static QuantityLength add(QuantityLength a, QuantityLength b, LengthUnit target) {
+            if (a == null || b == null || target == null) throw new IllegalArgumentException();
+            double sumBase = a.toFeet() + b.toFeet();
+            double result = target.fromBase(sumBase);
+            return new QuantityLength(result, target);
+        }
+
         @Override
         public boolean equals(Object obj) {
             if (this == obj) return true;
@@ -63,6 +77,9 @@ public class mesurementapp {
     }
 
     public static void main(String[] args) {
+        System.out.println(new QuantityLength(1.0, LengthUnit.FEET).add(new QuantityLength(12.0, LengthUnit.INCH)));
+        System.out.println(new QuantityLength(12.0, LengthUnit.INCH).add(new QuantityLength(1.0, LengthUnit.FEET)));
+        System.out.println(QuantityLength.add(new QuantityLength(1.0, LengthUnit.YARDS), new QuantityLength(3.0, LengthUnit.FEET), LengthUnit.YARDS));
         System.out.println(convert(1.0, LengthUnit.FEET, LengthUnit.INCH));
         System.out.println(convert(3.0, LengthUnit.YARDS, LengthUnit.FEET));
         System.out.println(convert(36.0, LengthUnit.INCH, LengthUnit.YARDS));

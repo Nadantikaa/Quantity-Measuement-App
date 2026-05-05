@@ -13,25 +13,12 @@ enum LengthUnit implements IMeasurable {
 
     private final double factor;
 
-    LengthUnit(double factor) {
-        this.factor = factor;
-    }
+    LengthUnit(double factor) { this.factor = factor; }
 
-    public double getConversionFactor() {
-        return factor;
-    }
-
-    public double convertToBaseUnit(double value) {
-        return value * factor;
-    }
-
-    public double convertFromBaseUnit(double baseValue) {
-        return baseValue / factor;
-    }
-
-    public String getUnitName() {
-        return name();
-    }
+    public double getConversionFactor() { return factor; }
+    public double convertToBaseUnit(double value) { return value * factor; }
+    public double convertFromBaseUnit(double baseValue) { return baseValue / factor; }
+    public String getUnitName() { return name(); }
 }
 
 enum WeightUnit implements IMeasurable {
@@ -41,25 +28,27 @@ enum WeightUnit implements IMeasurable {
 
     private final double factor;
 
-    WeightUnit(double factor) {
-        this.factor = factor;
-    }
+    WeightUnit(double factor) { this.factor = factor; }
 
-    public double getConversionFactor() {
-        return factor;
-    }
+    public double getConversionFactor() { return factor; }
+    public double convertToBaseUnit(double value) { return value * factor; }
+    public double convertFromBaseUnit(double baseValue) { return baseValue / factor; }
+    public String getUnitName() { return name(); }
+}
 
-    public double convertToBaseUnit(double value) {
-        return value * factor;
-    }
+enum VolumeUnit implements IMeasurable {
+    LITRE(1.0),
+    MILLILITRE(0.001),
+    GALLON(3.78541);
 
-    public double convertFromBaseUnit(double baseValue) {
-        return baseValue / factor;
-    }
+    private final double factor;
 
-    public String getUnitName() {
-        return name();
-    }
+    VolumeUnit(double factor) { this.factor = factor; }
+
+    public double getConversionFactor() { return factor; }
+    public double convertToBaseUnit(double value) { return value * factor; }
+    public double convertFromBaseUnit(double baseValue) { return baseValue / factor; }
+    public String getUnitName() { return name(); }
 }
 
 public class mesurementapp {
@@ -117,6 +106,15 @@ public class mesurementapp {
     }
 
     public static void main(String[] args) {
+        Quantity<VolumeUnit> v1 = new Quantity<>(1.0, VolumeUnit.LITRE);
+        Quantity<VolumeUnit> v2 = new Quantity<>(1000.0, VolumeUnit.MILLILITRE);
+        Quantity<VolumeUnit> v3 = new Quantity<>(1.0, VolumeUnit.GALLON);
+
+        System.out.println(v1.equals(v2));
+        System.out.println(v1.convertTo(VolumeUnit.MILLILITRE));
+        System.out.println(v1.add(v2, VolumeUnit.LITRE));
+        System.out.println(v3.convertTo(VolumeUnit.LITRE));
+        System.out.println(v1.add(v3, VolumeUnit.MILLILITRE));
         Quantity<LengthUnit> l1 = new Quantity<>(1.0, LengthUnit.FEET);
         Quantity<LengthUnit> l2 = new Quantity<>(12.0, LengthUnit.INCH);
         System.out.println(l1.equals(l2));

@@ -2,7 +2,9 @@ public class mesurementapp {
 
     enum LengthUnit {
         FEET(1.0),
-        INCH(1.0 / 12.0);
+        INCH(1.0 / 12.0),
+        YARDS(3.0),
+        CENTIMETERS(0.393701 / 12.0);
 
         private final double toFeet;
 
@@ -38,11 +40,8 @@ public class mesurementapp {
     }
 
     public static void main(String[] args) {
-        QuantityLength q1 = new QuantityLength(1.0, LengthUnit.FEET);
-        QuantityLength q2 = new QuantityLength(12.0, LengthUnit.INCH);
-        QuantityLength q3 = new QuantityLength(1.0, LengthUnit.INCH);
-
-        System.out.println(q1.equals(q2));
-        System.out.println(q3.equals(new QuantityLength(1.0, LengthUnit.INCH)));
+        System.out.println(new QuantityLength(1.0, LengthUnit.YARDS).equals(new QuantityLength(3.0, LengthUnit.FEET)));
+        System.out.println(new QuantityLength(1.0, LengthUnit.YARDS).equals(new QuantityLength(36.0, LengthUnit.INCH)));
+        System.out.println(new QuantityLength(1.0, LengthUnit.CENTIMETERS).equals(new QuantityLength(0.393701, LengthUnit.INCH)));
     }
 }

@@ -58,6 +58,25 @@ public class mesurementapp {
         private final U unit;
         private static final double EPSILON = 1e-6;
 
+        private enum ArithmeticOperation {
+            ADD((a, b) -> a + b),
+            SUBTRACT((a, b) -> a - b),
+            DIVIDE((a, b) -> {
+                if (b == 0) throw new ArithmeticException();
+                return a / b;
+            });
+
+            private final java.util.function.DoubleBinaryOperator op;
+
+            ArithmeticOperation(java.util.function.DoubleBinaryOperator op) {
+                this.op = op;
+            }
+
+            double compute(double a, double b) {
+                return op.applyAsDouble(a, b);
+            }
+        }
+
         public Quantity(double value, U unit) {
             if (!Double.isFinite(value) || unit == null) throw new IllegalArgumentException();
             this.value = value;
@@ -68,17 +87,35 @@ public class mesurementapp {
             return unit.convertToBaseUnit(value);
         }
 
+        private void validate(Quantity<U> other, U target, boolean needTarget) {
+            if (other == null) throw new IllegalArgumentException();
+            if (!Double.isFinite(other.value)) throw new IllegalArgumentException();
+            if (unit.getClass() != other.unit.getClass()) throw new IllegalArgumentException();
+            if (needTarget && target == null) throw new IllegalArgumentException();
+        }
+
+        private double performBaseArithmetic(Quantity<U> other, ArithmeticOperation op) {
+            validate(other, null, false);
+            return op.compute(this.toBase(), other.toBase());
+        }
+
+        private double round(double v) {
+            return Math.round(v * 100.0) / 100.0;
+        }
+
         public Quantity<U> convertTo(U target) {
             if (target == null) throw new IllegalArgumentException();
-            double converted = target.convertFromBaseUnit(toBase());
-            return new Quantity<>(converted, target);
+            return new Quantity<>(target.convertFromBaseUnit(toBase()), target);
+        }
+
+        public Quantity<U> add(Quantity<U> other) {
+            return add(other, this.unit);
         }
 
         public Quantity<U> add(Quantity<U> other, U target) {
-            if (other == null || target == null || unit.getClass() != other.unit.getClass())
-                throw new IllegalArgumentException();
-            double sum = this.toBase() + other.toBase();
-            return new Quantity<>(target.convertFromBaseUnit(sum), target);
+            validate(other, target, true);
+            double result = performBaseArithmetic(other, ArithmeticOperation.ADD);
+            return new Quantity<>(round(target.convertFromBaseUnit(result)), target);
         }
 
         public Quantity<U> subtract(Quantity<U> other) {
@@ -86,18 +123,14 @@ public class mesurementapp {
         }
 
         public Quantity<U> subtract(Quantity<U> other, U target) {
-            if (other == null || target == null || unit.getClass() != other.unit.getClass())
-                throw new IllegalArgumentException();
-            double diff = this.toBase() - other.toBase();
-            return new Quantity<>(target.convertFromBaseUnit(diff), target);
+            validate(other, target, true);
+            double result = performBaseArithmetic(other, ArithmeticOperation.SUBTRACT);
+            return new Quantity<>(round(target.convertFromBaseUnit(result)), target);
         }
 
         public double divide(Quantity<U> other) {
-            if (other == null || unit.getClass() != other.unit.getClass())
-                throw new IllegalArgumentException();
-            double divisor = other.toBase();
-            if (divisor == 0) throw new ArithmeticException();
-            return this.toBase() / divisor;
+            validate(other, null, false);
+            return performBaseArithmetic(other, ArithmeticOperation.DIVIDE);
         }
 
         @Override
@@ -106,7 +139,7 @@ public class mesurementapp {
             if (obj == null || getClass() != obj.getClass()) return false;
             Quantity<?> other = (Quantity<?>) obj;
             if (unit.getClass() != other.unit.getClass()) return false;
-            return Math.abs(this.toBase() - other.toBase()) < EPSILON;
+            return Math.abs(this.toBase() - other.unit.convertToBaseUnit(other.value)) < EPSILON;
         }
 
         @Override
@@ -122,6 +155,12 @@ public class mesurementapp {
     }
 
     public static void main(String[] args) {
+        Quantity<LengthUnit> a = new Quantity<>(10.0, LengthUnit.FEET);
+        Quantity<LengthUnit> b = new Quantity<>(6.0, LengthUnit.INCH);
+
+        System.out.println(a.add(b));
+        System.out.println(a.subtract(b));
+        System.out.println(a.divide(new Quantity<>(2.0, LengthUnit.FEET)));
         Quantity<LengthUnit> l1 = new Quantity<>(10.0, LengthUnit.FEET);
         Quantity<LengthUnit> l2 = new Quantity<>(6.0, LengthUnit.INCH);
         System.out.println(l1.subtract(l2));

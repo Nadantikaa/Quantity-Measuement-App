@@ -64,22 +64,40 @@ public class mesurementapp {
             this.unit = unit;
         }
 
+        private double toBase() {
+            return unit.convertToBaseUnit(value);
+        }
+
         public Quantity<U> convertTo(U target) {
             if (target == null) throw new IllegalArgumentException();
-            double base = unit.convertToBaseUnit(value);
-            double converted = target.convertFromBaseUnit(base);
+            double converted = target.convertFromBaseUnit(toBase());
             return new Quantity<>(converted, target);
         }
 
-        public Quantity<U> add(Quantity<U> other) {
-            if (other == null) throw new IllegalArgumentException();
-            return add(other, this.unit);
+        public Quantity<U> add(Quantity<U> other, U target) {
+            if (other == null || target == null || unit.getClass() != other.unit.getClass())
+                throw new IllegalArgumentException();
+            double sum = this.toBase() + other.toBase();
+            return new Quantity<>(target.convertFromBaseUnit(sum), target);
         }
 
-        public Quantity<U> add(Quantity<U> other, U target) {
-            if (other == null || target == null) throw new IllegalArgumentException();
-            double sum = unit.convertToBaseUnit(value) + other.unit.convertToBaseUnit(other.value);
-            return new Quantity<>(target.convertFromBaseUnit(sum), target);
+        public Quantity<U> subtract(Quantity<U> other) {
+            return subtract(other, this.unit);
+        }
+
+        public Quantity<U> subtract(Quantity<U> other, U target) {
+            if (other == null || target == null || unit.getClass() != other.unit.getClass())
+                throw new IllegalArgumentException();
+            double diff = this.toBase() - other.toBase();
+            return new Quantity<>(target.convertFromBaseUnit(diff), target);
+        }
+
+        public double divide(Quantity<U> other) {
+            if (other == null || unit.getClass() != other.unit.getClass())
+                throw new IllegalArgumentException();
+            double divisor = other.toBase();
+            if (divisor == 0) throw new ArithmeticException();
+            return this.toBase() / divisor;
         }
 
         @Override
@@ -88,14 +106,12 @@ public class mesurementapp {
             if (obj == null || getClass() != obj.getClass()) return false;
             Quantity<?> other = (Quantity<?>) obj;
             if (unit.getClass() != other.unit.getClass()) return false;
-            double a = unit.convertToBaseUnit(value);
-            double b = other.unit.convertToBaseUnit(other.value);
-            return Math.abs(a - b) < EPSILON;
+            return Math.abs(this.toBase() - other.toBase()) < EPSILON;
         }
 
         @Override
         public int hashCode() {
-            long bits = Double.doubleToLongBits(unit.convertToBaseUnit(value));
+            long bits = Double.doubleToLongBits(toBase());
             return (int) (bits ^ (bits >>> 32));
         }
 
@@ -106,6 +122,20 @@ public class mesurementapp {
     }
 
     public static void main(String[] args) {
+        Quantity<LengthUnit> l1 = new Quantity<>(10.0, LengthUnit.FEET);
+        Quantity<LengthUnit> l2 = new Quantity<>(6.0, LengthUnit.INCH);
+        System.out.println(l1.subtract(l2));
+        System.out.println(l1.divide(new Quantity<>(2.0, LengthUnit.FEET)));
+
+        Quantity<WeightUnit> w1 = new Quantity<>(10.0, WeightUnit.KILOGRAM);
+        Quantity<WeightUnit> w2 = new Quantity<>(5000.0, WeightUnit.GRAM);
+        System.out.println(w1.subtract(w2));
+        System.out.println(w1.divide(new Quantity<>(5.0, WeightUnit.KILOGRAM)));
+
+        Quantity<VolumeUnit> v1 = new Quantity<>(5.0, VolumeUnit.LITRE);
+        Quantity<VolumeUnit> v2 = new Quantity<>(500.0, VolumeUnit.MILLILITRE);
+        System.out.println(v1.subtract(v2));
+        System.out.println(v1.divide(new Quantity<>(10.0, VolumeUnit.LITRE)));
         Quantity<VolumeUnit> v1 = new Quantity<>(1.0, VolumeUnit.LITRE);
         Quantity<VolumeUnit> v2 = new Quantity<>(1000.0, VolumeUnit.MILLILITRE);
         Quantity<VolumeUnit> v3 = new Quantity<>(1.0, VolumeUnit.GALLON);

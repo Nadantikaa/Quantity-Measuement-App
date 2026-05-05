@@ -44,9 +44,7 @@ public class mesurementapp {
 
         public QuantityLength add(QuantityLength other) {
             if (other == null) throw new IllegalArgumentException();
-            double sumBase = this.toFeet() + other.toFeet();
-            double result = this.unit.fromBase(sumBase);
-            return new QuantityLength(result, this.unit);
+            return add(this, other, this.unit);
         }
 
         public static QuantityLength add(QuantityLength a, QuantityLength b, LengthUnit target) {
@@ -77,6 +75,9 @@ public class mesurementapp {
     }
 
     public static void main(String[] args) {
+        System.out.println(QuantityLength.add(new QuantityLength(1.0, LengthUnit.FEET), new QuantityLength(12.0, LengthUnit.INCH), LengthUnit.FEET));
+        System.out.println(QuantityLength.add(new QuantityLength(1.0, LengthUnit.FEET), new QuantityLength(12.0, LengthUnit.INCH), LengthUnit.INCH));
+        System.out.println(QuantityLength.add(new QuantityLength(1.0, LengthUnit.FEET), new QuantityLength(12.0, LengthUnit.INCH), LengthUnit.YARDS));
         System.out.println(new QuantityLength(1.0, LengthUnit.FEET).add(new QuantityLength(12.0, LengthUnit.INCH)));
         System.out.println(new QuantityLength(12.0, LengthUnit.INCH).add(new QuantityLength(1.0, LengthUnit.FEET)));
         System.out.println(QuantityLength.add(new QuantityLength(1.0, LengthUnit.YARDS), new QuantityLength(3.0, LengthUnit.FEET), LengthUnit.YARDS));

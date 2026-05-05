@@ -128,5 +128,25 @@ public class mesurementapp {
         System.out.println(w1.equals(w2));
         System.out.println(w1.convertTo(WeightUnit.GRAM));
         System.out.println(w1.add(w2, WeightUnit.KILOGRAM));
+        System.out.println(new QuantityWeight(1.0, WeightUnit.KILOGRAM).equals(new QuantityWeight(1000.0, WeightUnit.GRAM)));
+        System.out.println(new QuantityWeight(1.0, WeightUnit.KILOGRAM).convertTo(WeightUnit.POUND));
+        System.out.println(QuantityWeight.add(new QuantityWeight(1.0, WeightUnit.KILOGRAM), new QuantityWeight(1000.0, WeightUnit.GRAM), WeightUnit.GRAM));
+        System.out.println(new QuantityLength(1.0, LengthUnit.FEET).convertTo(LengthUnit.INCH));
+        System.out.println(QuantityLength.add(new QuantityLength(1.0, LengthUnit.FEET), new QuantityLength(12.0, LengthUnit.INCH), LengthUnit.FEET));
+        System.out.println(new QuantityLength(36.0, LengthUnit.INCH).equals(new QuantityLength(1.0, LengthUnit.YARDS)));
+        System.out.println(QuantityLength.add(new QuantityLength(1.0, LengthUnit.FEET), new QuantityLength(12.0, LengthUnit.INCH), LengthUnit.INCH));
+        System.out.println(QuantityLength.add(new QuantityLength(1.0, LengthUnit.FEET), new QuantityLength(12.0, LengthUnit.INCH), LengthUnit.YARDS));
+        System.out.println(new QuantityLength(1.0, LengthUnit.FEET).add(new QuantityLength(12.0, LengthUnit.INCH)));
+        System.out.println(new QuantityLength(12.0, LengthUnit.INCH).add(new QuantityLength(1.0, LengthUnit.FEET)));
+        System.out.println(QuantityLength.add(new QuantityLength(1.0, LengthUnit.YARDS), new QuantityLength(3.0, LengthUnit.FEET), LengthUnit.YARDS));
+        System.out.println(convert(1.0, LengthUnit.FEET, LengthUnit.INCH));
+        System.out.println(convert(3.0, LengthUnit.YARDS, LengthUnit.FEET));
+        System.out.println(convert(36.0, LengthUnit.INCH, LengthUnit.YARDS));
+        System.out.println(convert(1.0, LengthUnit.CENTIMETERS, LengthUnit.INCH));
+        System.out.println(new QuantityLength(1.0, LengthUnit.FEET).convertTo(LengthUnit.INCH));
+    public static void main(String[] args) {
+        System.out.println(new QuantityLength(1.0, LengthUnit.YARDS).equals(new QuantityLength(3.0, LengthUnit.FEET)));
+        System.out.println(new QuantityLength(1.0, LengthUnit.YARDS).equals(new QuantityLength(36.0, LengthUnit.INCH)));
+        System.out.println(new QuantityLength(1.0, LengthUnit.CENTIMETERS).equals(new QuantityLength(0.393701, LengthUnit.INCH)));
     }
 }
